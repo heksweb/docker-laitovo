@@ -1,0 +1,35 @@
+web:
+  image: heksweb/nginx
+  restart: always
+  volumes:
+   - ./nginx/app.conf:/etc/nginx/conf.d/app.conf
+   - ./app/:/var/www/html/
+  ports:
+   - "80:80"
+  links:
+    - "php"
+
+php:
+  image: heksweb/php-fpm:1.0
+  restart: always
+  volumes:
+     - ./app/:/var/www/html/
+     - ./php/php.ini:/usr/local/etc/php/php.ini
+  links:
+    - "mysqldb:mysql"
+
+mysqldb:
+  image: heksweb/mysql:5.7
+  container_name: mysqldb
+  ports:
+      - "3306:3306"
+  volumes:
+      - ./testmysql:/var/lib/mysql
+      - ./dumps/:/var/dumps/
+  restart: always
+  environment:
+      - MYSQL_DATABASE=laitovoweb
+      - MYSQL_ROOT_PASSWORD=am3512673
+      - MYSQL_USER=laitovoweb
+      - MYSQL_PASSWORD=72nuWt7UUNfNqMEC
+

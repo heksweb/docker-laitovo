@@ -1,0 +1,190 @@
+server {
+    listen  80;
+    server_name  laitovo.eu  www.laitovo.eu;
+    rewrite ^ https://laitovo.eu$request_uri? permanent; #301 redirect
+}
+server {
+    listen  80;
+    server_name  m.laitovo.eu;
+    rewrite ^ https://m.laitovo.eu$request_uri? permanent; #301 redirect
+}
+server {
+    listen 443 ssl;
+    ssl_certificate     /etc/letsencrypt/live/laitovo.eu/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/laitovo.eu/privkey.pem;
+
+    server_name  www.laitovo.eu;
+    rewrite ^ https://laitovo.eu$request_uri? permanent; #301 redirect
+}
+
+server {
+    charset utf-8;
+    client_max_body_size 128M;
+
+    listen 443 ssl;
+    ssl_certificate     /etc/letsencrypt/live/laitovo.eu/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/laitovo.eu/privkey.pem;
+
+    server_name laitovo.eu;
+    root        /var/www/laitovo;
+    index       index.php;
+
+#    access_log  /path/to/basic/log/access.log;
+#    error_log   /path/to/basic/log/error.log;
+
+    location /admin/ {
+        try_files $uri $uri/ /admin/index.php$is_args$args;
+    }
+
+    location /ru_RU/admin/ {
+        try_files $uri $uri/ /ru_RU/admin/index.php$is_args$args;
+    }
+
+    location /ru_RU/ {
+        try_files $uri $uri/ /ru_RU/index.php$is_args$args;
+    }
+
+    location /kz_KZ/admin/ {
+        try_files $uri $uri/ /kz_KZ/admin/index.php$is_args$args;
+    }
+
+    location /kz_KZ/ {
+        try_files $uri $uri/ /kz_KZ/index.php$is_args$args;
+    }
+
+    location /de_DE/admin/ {
+        try_files $uri $uri/ /de_DE/admin/index.php$is_args$args;
+    }
+
+    location /de_DE/ {
+        try_files $uri $uri/ /de_DE/index.php$is_args$args;
+    }
+
+    location /tr_TR/admin/ {
+        try_files $uri $uri/ /tr_TR/admin/index.php$is_args$args;
+    }
+
+    location /tr_TR/ {
+        try_files $uri $uri/ /tr_TR/index.php$is_args$args;
+    }
+
+    location /br/ {
+        try_files $uri $uri/ /br/index.php$is_args$args;
+    }
+
+    location /de/ {
+        try_files $uri $uri/ /de/index.php$is_args$args;
+    }
+
+    location /en/ {
+        try_files $uri $uri/ /en/index.php$is_args$args;
+    }
+
+    location /es/ {
+        try_files $uri $uri/ /es/index.php$is_args$args;
+    }
+
+    location /fr/ {
+        try_files $uri $uri/ /fr/index.php$is_args$args;
+    }
+
+    location /nl/ {
+        try_files $uri $uri/ /nl/index.php$is_args$args;
+    }
+
+    location /pt/ {
+        try_files $uri $uri/ /pt/index.php$is_args$args;
+    }
+
+    location /ru/ {
+        try_files $uri $uri/ /ru/index.php$is_args$args;
+    }
+
+    location /tr/ {
+        try_files $uri $uri/ /tr/index.php$is_args$args;
+    }
+
+    location /zh/ {
+        try_files $uri $uri/ /zh/index.php$is_args$args;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    # uncomment to avoid processing of calls to non-existing static files by Yii
+    #location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar)$ {
+    #    try_files $uri =404;
+    #}
+    #error_page 404 /404.html;
+
+    # deny accessing php files for the /assets directory
+    location ~ ^/assets/.*\.php$ {
+        deny all;
+    }
+
+    location ~ ^/admin/protected/.*$ {
+        deny all;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        #fastcgi_read_timeout 300;
+        try_files $uri =404;
+    }
+
+    location ~* /\. {
+        deny all;
+    }
+}
+
+
+server {
+    charset utf-8;
+    client_max_body_size 128M;
+
+    listen 443 ssl;
+    ssl_certificate     /etc/letsencrypt/live/laitovo.eu/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/laitovo.eu/privkey.pem;
+
+    server_name m.laitovo.eu;
+    root        /var/www/laitovo3/mobile/web_eu;
+    index       index.php;
+
+#    access_log  /path/to/basic/log/access.log;
+#    error_log   /path/to/basic/log/error.log;
+
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    # uncomment to avoid processing of calls to non-existing static files by Yii
+    #location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar)$ {
+    #    try_files $uri =404;
+    #}
+    #error_page 404 /404.html;
+
+    # deny accessing php files for the /assets directory
+    location ~ ^/assets/.*\.php$ {
+        deny all;
+    }
+
+    location ~ ^/admin/protected/.*$ {
+        deny all;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        #fastcgi_read_timeout 300;
+        try_files $uri =404;
+    }
+
+    location ~* /\. {
+        deny all;
+    }
+}

@@ -1,0 +1,60 @@
+server {
+    listen  80;
+    server_name  xn--5dbhaasoec8a1fua.co.il  www.xn--5dbhaasoec8a1fua.co.il;
+    rewrite ^ https://xn--5dbhaasoec8a1fua.co.il$request_uri? permanent; #301 redirect
+}
+server {
+    listen 443 ssl;
+    ssl_certificate     /etc/letsencrypt/live/xn--5dbhaasoec8a1fua.co.il/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/xn--5dbhaasoec8a1fua.co.il/privkey.pem;
+
+    server_name  www.xn--5dbhaasoec8a1fua.co.il;
+    rewrite ^ https://xn--5dbhaasoec8a1fua.co.il$request_uri? permanent; #301 redirect
+}
+
+server {
+    charset utf-8;
+    client_max_body_size 128M;
+
+    listen 443 ssl;
+    ssl_certificate     /etc/letsencrypt/live/xn--5dbhaasoec8a1fua.co.il/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/xn--5dbhaasoec8a1fua.co.il/privkey.pem;
+
+    server_name xn--5dbhaasoec8a1fua.co.il;
+    root        /var/www/laitovo/de_DE/landing_il;
+    index       index.php;
+
+#    access_log  /path/to/basic/log/access.log;
+#    error_log   /path/to/basic/log/error.log;
+
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    # uncomment to avoid processing of calls to non-existing static files by Yii
+    #location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar)$ {
+    #    try_files $uri =404;
+    #}
+    #error_page 404 /404.html;
+
+    # deny accessing php files for the /assets directory
+    location ~ ^/(assets|themes)/.*\.php$ {
+        deny all;
+    }
+    location ~ ^/admin/(assets|themes)/.*\.php$ {
+        deny all;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        #fastcgi_read_timeout 300;
+        try_files $uri =404;
+    }
+
+    location ~* /\. {
+        deny all;
+    }
+}

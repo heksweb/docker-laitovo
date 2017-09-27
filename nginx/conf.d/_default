@@ -1,0 +1,11 @@
+server {
+    listen  80;
+    server_name _;
+    rewrite ^ https://laitovo.eu$request_uri? permanent; #301 redirect
+}
+
+server {
+    listen  80;
+    server_name laitovo.su www.laitovo.su 440044.ru www.440044.ru;
+    rewrite ^ https://laitovo.ru$request_uri? permanent; #301 redirect
+}

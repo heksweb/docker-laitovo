@@ -1,35 +1,55 @@
-web:
-  image: heksweb/nginx
-  restart: always
-  volumes:
-   - ./nginx/app.conf:/etc/nginx/conf.d/app.conf
-   - ./app/:/var/www/html/
-  ports:
-   - "80:80"
-  links:
-    - "php"
+version: "3"
 
-php:
-  image: heksweb/php-fpm:1.0
-  restart: always
-  volumes:
-     - ./app/:/var/www/html/
-     - ./php/php.ini:/usr/local/etc/php/php.ini
-  links:
-    - "mysqldb:mysql"
+services:
+  web:
+    image: nginx:latest
+    networks:
+      some-network:
+        aliases:
+          - laitovo-eu.loc
+          - laitovo-ru.loc
+          - laitovo-kz.loc
+    restart: always
+    volumes:
+      - ./nginx/laitovoru.conf:/etc/nginx/conf.d/laitovoru.conf
+      - ./nginx/laitovoeu.conf:/etc/nginx/conf.d/laitovoeu.conf
+      - ./nginx/laitovokz.conf:/etc/nginx/conf.d/laitovokz.conf
+      - ./app/:/var/www/html/
+    ports:
+      - "80:80"
+    links:
+      - "php"
 
-mysqldb:
-  image: heksweb/mysql:5.7
-  container_name: mysqldb
-  ports:
+  php:
+    image: heksweb/php-fpm:1.5
+    networks:
+      some-network:
+    user: "1000:1000"
+    restart: always
+    volumes:
+      - ./app/:/var/www/html/
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+    links:
+      - "mysqldb:mysql"
+
+  mysqldb:
+    networks:
+      some-network:
+    image: heksweb/mysql:5.7
+    container_name: mysqldb
+    ports:
       - "3306:3306"
-  volumes:
-      - ./testmysql:/var/lib/mysql
+    volumes:
+      - ./mysql/my.conf:/etc/mysql/my.cnf
+      - ./mysql/lib:/var/lib/mysql
       - ./dumps/:/var/dumps/
-  restart: always
-  environment:
-      - MYSQL_DATABASE=laitovoweb
-      - MYSQL_ROOT_PASSWORD=am3512673
-      - MYSQL_USER=laitovoweb
-      - MYSQL_PASSWORD=72nuWt7UUNfNqMEC
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+
+networks:
+  some-network:
 

@@ -52,5 +52,5 @@ nginx/laitovoeu.conf
 nginx/laitovoru.conf
 nginx/laitovokz.conf
 dumps/
-mysql/
+mysql/lib
 
